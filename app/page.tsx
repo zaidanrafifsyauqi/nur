@@ -1,69 +1,101 @@
-import Image from "next/image";
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, MapPin } from "lucide-react";
+import { GreetingHeader } from "@/components/home/cards";
+import { DailyDoa } from "@/components/home/DailyDoa";
+import { HomePrayerSection } from "@/components/home/HomePrayerSection";
+import { QuranEntry } from "@/components/home/QuranEntry";
+import { PageContainer } from "@/components/layout/containers";
+import { Card } from "@/components/ui/controls";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "NUR — Islamic & Muslim Travel Companion",
+  description:
+    "A modern Islamic companion for prayer times, Quran, duas, Hijri calendar, Qibla and Muslim-friendly travel.",
+};
+
+function SectionSkeleton({ label }: { label: string }) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div role="status" aria-live="polite" aria-label={label}>
+      <div className="animate-pulse rounded-2xl border border-[var(--nur-border)] bg-[var(--nur-surface)] p-5">
+        <div className="h-4 w-28 rounded bg-[var(--nur-surface-2)]" />
+        <div className="mt-3 h-5 w-2/3 rounded bg-[var(--nur-surface-2)]" />
+        <div className="mt-2 h-4 w-full rounded bg-[var(--nur-surface-2)]" />
+      </div>
     </div>
+  );
+}
+
+/**
+ * Stage 4A — real Home dashboard. Prayer/location/Hijri live via
+ * HomePrayerSection; Quran entry + daily doa via isolated server sections
+ * (independent Suspense = independent loading/failure). No mock content,
+ * no new APIs, no duplicate requests.
+ */
+export default function HomePage() {
+  return (
+    <PageContainer>
+      <div className="flex flex-col gap-4">
+        {/* A. Header / greeting context */}
+        <GreetingHeader />
+
+        {/* B + C. Islamic context + live prayer (one client boundary) */}
+        <HomePrayerSection />
+
+        {/* D. Quran entry */}
+        <section aria-labelledby="home-quran">
+          <div className="mb-3">
+            <h2 id="home-quran" className="text-lg font-semibold tracking-tight">
+              Quran
+            </h2>
+          </div>
+          <Suspense fallback={<SectionSkeleton label="Loading Quran entry" />}>
+            <QuranEntry />
+          </Suspense>
+        </section>
+
+        {/* E. Daily doa */}
+        <section aria-labelledby="home-doa">
+          <div className="mb-3">
+            <h2 id="home-doa" className="text-lg font-semibold tracking-tight">
+              Daily doa
+            </h2>
+          </div>
+          <Suspense fallback={<SectionSkeleton label="Loading daily doa" />}>
+            <DailyDoa />
+          </Suspense>
+        </section>
+
+        {/* F. Travel companion (navigation only — no map fetch here) */}
+        <section aria-labelledby="home-travel">
+          <div className="mb-3">
+            <h2 id="home-travel" className="text-lg font-semibold tracking-tight">
+              Muslim Travel Companion
+            </h2>
+          </div>
+          <Card className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+            <span
+              aria-hidden
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--nur-surface-2)] text-nur-deep dark:text-nur-gold"
+            >
+              <MapPin className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">Mosques, halal food, Qibla and Muslim map.</p>
+              <p className="text-sm text-[var(--nur-text-secondary)]">
+                Explore Muslim-friendly places wherever you go.
+              </p>
+            </div>
+            <Link
+              href="/travel"
+              className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl bg-nur-deep px-5 text-sm font-semibold text-white dark:bg-nur-gold dark:text-nur-ink"
+            >
+              Explore Travel <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </Card>
+        </section>
+      </div>
+    </PageContainer>
   );
 }
