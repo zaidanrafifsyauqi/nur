@@ -9,7 +9,7 @@ import { PlaceCard } from "@/components/travel/PlaceCard";
 import { Card } from "@/components/ui/controls";
 import { EmptyState, LoadingState } from "@/components/ui/states";
 import { useGeolocation } from "@/lib/location/useGeolocation";
-import { abortNearbySearch, searchNearbyPlaces } from "@/lib/services/travel";
+import { abortNearbySearch, searchNearbyViaProxy } from "@/lib/services/travel";
 import { OVERPASS_CONFIG } from "@/lib/services/travel/overpassConfig";
 import { haversineMeters } from "@/lib/services/travel/distance";
 import { MAP_CONFIG } from "@/lib/services/travel/mapConfig";
@@ -179,7 +179,7 @@ export function MuslimMap() {
       setSearch({ status: "loading" });
       setShowSearchArea(false);
       try {
-        const res = await searchNearbyPlaces({ latitude, longitude, category: cat });
+        const res = await searchNearbyViaProxy({ latitude, longitude, category: cat });
         if (requestIdRef.current !== id) return; // superseded
         setPlaces(res.places);
         searchCenterRef.current = res.searchCenter;

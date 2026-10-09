@@ -115,3 +115,32 @@ export function buildPlaceQuery(
   }
   return `[out:json][timeout:${timeout}];(${blocks.join("")});out center tags;`;
 }
+
+function isOverpassElement(value: unknown): value is OverpassElement {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    (v.type === "node" || v.type === "way" || v.type === "relation") &&
+    typeof v.id === "number"
+  );
+}
+
+/**
+ * Shared response-shape guard for both transports (browser-direct and the
+ * same-origin proxy). Throws on malformed shapes; callers map the throw to
+ * fatal/no-retry. Extra top-level keys are tolerated.
+ */
+export function assertOverpassElements(json: unknown): OverpassElement[] {
+  if (
+    typeof json !== "object" ||
+    json === null ||
+    !Array.isArray((json as Partial<OverpassResponse>).elements)
+  ) {
+    throw new Error("Overpass response was malformed.");
+  }
+  const elements = (json as OverpassResponse).elements;
+  if (!elements.every(isOverpassElement)) {
+    throw new Error("Overpass response was malformed.");
+  }
+  return elements;
+}

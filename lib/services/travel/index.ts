@@ -23,3 +23,5 @@ export async function getQiblaPlaceholder() {
 export { searchNearbyMosques, abortNearbySearch } from "./places";
 /** Stage 3C — generalized alias (same transport, category-driven). */
 export { searchNearbyPlaces } from "./places";
+/** Stage Proxy-1 — same contract via same-origin /api/places (UI transport). */
+export { searchNearbyViaProxy } from "./places";

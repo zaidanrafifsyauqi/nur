@@ -48,3 +48,18 @@ export class OverpassStatusError extends Error {
     this.status = status;
   }
 }
+
+/**
+ * Internal client-side timeout (the budget racing Overpass in places.ts).
+ *
+ * Deliberately distinct from external aborts (unmount / superseding search,
+ * which surface as DOMException AbortError): a timeout means the attempt
+ * produced no answer and is eligible for the single retry, while external
+ * aborts must stay silent and never retry.
+ */
+export class OverpassTimeoutError extends Error {
+  constructor() {
+    super("Overpass request timed out.");
+    this.name = "OverpassTimeoutError";
+  }
+}
