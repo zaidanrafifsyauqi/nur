@@ -19,7 +19,7 @@ import { Badge, Card, Progress } from "@/components/ui/controls";
 import { PrayerTime } from "@/components/prayer/PrayerTime";
 
 /** ——— Greeting ——— */
-export function GreetingHeader({ name = "Zaidan" }: { name?: string }) {
+export function GreetingHeader({ name = "Saudaraku" }: { name?: string }) {
   return (
     <section aria-labelledby="greeting" className="pt-2">
       <p id="greeting" className="text-sm text-[var(--nur-text-secondary)]">
